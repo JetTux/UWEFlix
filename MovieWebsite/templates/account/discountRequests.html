@@ -1,0 +1,14 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Discount Requests</b></div>
+            <ul>
+                  {% for discountList in requests %}
+                        <li>Name: {{ discountList }} 
+                        <a href="{% url 'update_discount' discountList.club %}">Update Discount</a> 
+                        <a href="{% url 'delete_discount' discountList.id %}">Delete Request</a></li> 
+                  {% endfor %}
+            </ul>
+{% endblock %}

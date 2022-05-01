@@ -1,0 +1,14 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Movies</b></div>
+            <ul>
+                  {% for movieListing in movie_list %}
+                        <li>Name: {{ movieListing }} 
+                        <a href="{% url 'update_movie' movieListing.id %}">Update</a> 
+                        <a href="{% url 'delete_movie' movieListing.id %}">Delete</a></li> 
+                  {% endfor %}
+            </ul>
+{% endblock %}

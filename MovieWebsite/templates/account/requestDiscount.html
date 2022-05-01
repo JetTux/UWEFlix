@@ -1,0 +1,13 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+    Log a message
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Request Discount</b></div>
+    <form method="POST" class="log-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Send Request</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,56 @@
+body{
+    background-color: rgb(42, 42, 42);
+}
+
+.message {
+    font-weight: 600;
+    color: blue;
+}
+
+
+.navbar {
+    background-color: #ffffff;
+    font-size: 1em;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: rgb(56, 56, 56);
+    padding: 10px;
+    text-align: center;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.navbar-brand {
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.navbar-item {
+    font-variant: small-caps;
+    margin-left: 30px;
+}
+
+.body-content {
+    background-color: aliceblue;
+    text-align: center;
+    border-radius: 25px;
+    padding: 5px;
+    font-family:'Parisine Pro', Tahoma, Geneva, Verdana, sans-serif;
+    color: #000000;
+    padding: 8px 5px 85px 5px;
+    width: 50%;
+    align-self: center;
+    margin: auto;
+}
+
+input[name=message] {
+    width: 80%;
+}
+
+.message_list th,td {
+    text-align: left;
+    padding-right: 15px;
+}
+

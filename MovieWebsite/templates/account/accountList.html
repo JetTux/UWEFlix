@@ -1,0 +1,23 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Accounts</b></div>
+            <ul>
+                  {% for User in users %}
+                        <li>Name: {{ User }} 
+                        <a href="{% url 'update_user' User.id %}">Update</a> 
+                  {% endfor %}
+                  {% for studentClub in studentClubs %}
+                        <li>Name: {{ studentClub }} 
+                        <a href="{% url 'update_club' studentClub.id %}">Update</a> 
+                        <a href="{% url 'viewClub' studentClub.id %}">View Unique Account Number</a> 
+                  {% endfor %}
+                  {% for clubRep in clubReps %}
+                        <li>Name: {{ clubRep }} 
+                        <a href="{% url 'update_club_rep' clubRep.id %}">Update</a> 
+                        <a href="{% url 'viewClubRep' clubRep.id %}">View Unique Details</a>
+                  {% endfor %}
+            </ul>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Account Number and Password</b></div>
+            <ul>
+                        <li>Account number: {{ clubRep.accountNumber }} 
+                        <li>Account password: {{ clubRep.accountPassword }} 
+                        <a href="{% url 'accountList' %}">Go Back</a> 
+            </ul>
+{% endblock %}

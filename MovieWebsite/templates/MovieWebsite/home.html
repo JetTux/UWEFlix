@@ -1,0 +1,10 @@
+{% extends "MovieWebsite/layout.html" %}
+{% block title %}
+{% endblock %}
+{% block content %}
+    {% if user.is_authenticated %}
+        Hi {{ user.username }}! You are logged in!
+    {% else %}
+        <p>You are not logged in</p>
+    {% endif %}
+{% endblock %}

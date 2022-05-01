@@ -1,0 +1,11 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Delete a movie</b></div>
+      <form method="post">{% csrf_token %}
+         <p>Are you sure you want to delete "{{ object }}"?</p>
+         <input type="submit" value="Confirm">
+      </form>
+{% endblock %}
