@@ -5,10 +5,10 @@ from django.conf.urls.static import static
 from .views import *
 
 urlpatterns = [
-  #  path('login/', user_login, name='login'),
+    path('loginClubRep/', clubRepLogin, name='loginClubRep'),
     path('logout/', user_logout, name='logout'),
     path('accountList/', allAccounts, name='accountList'),
-    path('viewClubRep/<clubRep_id>', viewClubRep, name='viewClubRep'),
+    path('viewClubRep/<clubRep_id>', notifyClubRep, name='viewClubRep'),
     path('viewClub/<studentClub_id>', viewClub, name='viewClub'),
     path("updateUser/<user_id>", updateUser, name='update_user'),
     path("updateClub/<studentClub_id>", updateClubAccount, name='update_club'),

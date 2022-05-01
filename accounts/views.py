@@ -28,28 +28,23 @@ def isCinemaOrAccountsManager(User):
 def isAccountsManager(User):
     return User.groups.filter(name='Accounts Manager').exists()
 
-#def user_login(request):
-#    if request.method == "POST":
-#        username = request.POST['username']
-#        password = request.POST['password']
-#        user = authenticate(request, username=username, password=password)
-#        if user is not None:
-#            login(request, user)
-#            return redirect('../../home')
-#        else:
-#            messages.success(request, ("Invalid login, please try again"))
-#            return redirect('login')
-#    else:
-#        return render(request, 'authenticate/login.html')
+def clubRepLogin(request):
+    if request.method == "POST":
+            accountNum = request.POST['username']
+            password = request.POST['password']
+            # TO DO - Make sure it sends a 404 when something other than a uuid is entered
+            #       - Make sure a flag is set to say that a club rep is 'logged in'
+            if ClubRep.objects.filter(accountNumber=accountNum, accountPassword=password):
+                return redirect('../../home')
+            else:
+                return redirect('../login')
+    else:
+        return render(request, 'account/loginClubRep.html')
 
 def user_logout(request):
     logout(request)
     messages.success(request, ("You were logged out"))
     return redirect('../../home')
-
-#def session_timeout(request):
- #   request.session
- #   return
 
 @login_required
 @user_passes_test(isAccountsManager)
@@ -62,7 +57,7 @@ def allAccounts(request):
 
 @login_required
 @user_passes_test(isAccountsManager)
-def viewClubRep(request, clubRep_id):
+def notifyClubRep(request, clubRep_id):
     clubRep = ClubRep.objects.get(pk= clubRep_id)
     send_mail(
             'New Login Details',

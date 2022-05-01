@@ -5,7 +5,7 @@ import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 import uuid
 
 
@@ -50,6 +50,9 @@ class discountList(models.Model):
 
     def __str__(self):
         return "Club: " + str(self.club) + " New discount rate: " + str(self.newDiscountRate)
+
+class clubRepUser(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
 
 
 # class MyAccountManager(BaseUserManager):
