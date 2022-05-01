@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -157,3 +158,16 @@ SESSION_EXPIRE_AT_TAB_CLOSE = True
 SESSION_COOKIE_AGE = 100 #MAYBE REMOVE THIS FOR DEMO                 
 SESSION_SAVE_EVERY_REQUEST = True   
 
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
+
+SECRET_KEY = env('SECRET_KEY')
+
+#Email Settings
+#https://myaccount.google.com/lesssecureapps
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = env("CREP_EMAIL")
+EMAIL_HOST_PASSWORD = env("CREP_PASS")
+EMAIL_USE_TLS = True

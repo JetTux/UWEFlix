@@ -31,7 +31,7 @@ class clubAccountNumberForm(forms.ModelForm):
 class clubRepForm(forms.ModelForm):
      class Meta:
          model = ClubRep
-         fields = ['firstname', 'surname', 'dateOfBirth']
+         fields = ['firstname', 'surname', 'dateOfBirth', 'accountEmail']
 
 class addClubAccount(forms.ModelForm):
     class Meta:
@@ -46,7 +46,7 @@ class addClub(forms.ModelForm):
 class addClubRep(forms.ModelForm):
      class Meta:
          model = ClubRep
-         fields = ['firstname', 'surname', 'dateOfBirth']
+         fields = ['firstname', 'surname', 'dateOfBirth', 'accountEmail']
 
 #New FV
 class discountListForm(forms.ModelForm):

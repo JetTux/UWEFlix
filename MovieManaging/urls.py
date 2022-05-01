@@ -8,7 +8,7 @@ from .views import *
 
 
 #https://django-allauth.readthedocs.io/en/latest/installation.html
-#pip install cookiecutter
+#pip install django-environ
 
 urlpatterns = [
     path("showingMovie/", createMovieShowing, name="showingMovie"),

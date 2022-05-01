@@ -1,3 +1,4 @@
+import email
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate, logout
@@ -12,6 +13,8 @@ from django.contrib.auth.models import User
 from accounts.forms import *
 from accounts.models import *
 from MovieManaging.views import isAccountsManager
+
+from django.core.mail import send_mail
 
 def isCinemaManager(User):
     return User.groups.filter(name='Cinema Manager').exists()
@@ -61,6 +64,12 @@ def allAccounts(request):
 @user_passes_test(isAccountsManager)
 def viewClubRep(request, clubRep_id):
     clubRep = ClubRep.objects.get(pk= clubRep_id)
+    send_mail(
+            'New Login Details',
+            'Here are your new login details. Account Number: '+ str(clubRep.accountNumber) +' Password: '+ str(clubRep.accountPassword),
+            'Dont Reply <do_not_reply@domain.com>',
+            [clubRep.accountEmail],
+    )
     return render(request, 'account/viewClubRep.html', {'clubRep':clubRep})
 
 @login_required
@@ -124,6 +133,7 @@ def clubRegister(request):
         if form.is_valid():
             message = form.save(commit=False)
             message.save()
+
             return redirect('../../home')
     else:
         return render(request, 'account/registerClub.html', {'form': form})

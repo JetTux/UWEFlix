@@ -25,6 +25,8 @@
         <a href="{% url 'registerClub' %}" class="navbar-item">Register Club</a>
         <a href="{% url 'registerClubRep' %}" class="navbar-item">Register Club Rep</a>
         <a href="{% url 'accountList' %}" class="navbar-item">View Accounts</a>
+        <a href="{% url 'discountRequests' %}" class="navbar-item">View Discount Requests</a>
+        <a href="{% url 'requestDiscount' %}" class="navbar-item">Request Discount</a>
         {% if user.is_authenticated %}
             <a href="{% url 'logout' %}" class="navbar-item">Logout</a>
         {% else %}

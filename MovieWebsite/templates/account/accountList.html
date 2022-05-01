@@ -17,7 +17,7 @@
                   {% for clubRep in clubReps %}
                         <li>Name: {{ clubRep }} 
                         <a href="{% url 'update_club_rep' clubRep.id %}">Update</a> 
-                        <a href="{% url 'viewClubRep' clubRep.id %}">View Unique Details</a>
+                        <a href="{% url 'viewClubRep' clubRep.id %}">Send Club Representative an email with their details</a>
                   {% endfor %}
             </ul>
 {% endblock %}

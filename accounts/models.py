@@ -38,6 +38,7 @@ class ClubRep(models.Model):
     firstname = models.CharField(max_length=300)
     surname = models.CharField(max_length=300)
     dateOfBirth = models.DateField(max_length=8)
+    accountEmail = models.EmailField()
 
     def __str__(self):
         return str(self.surname)
