@@ -17,16 +17,25 @@
 <div class="navbar">
     <a href="{% url 'homer' %}" class="navbar-item">Home</a>
     {% comment %} {% if user.is_superuser %} {% endcomment %}
+        <a href="{% url 'bookMovie' %}" class="navbar-item">Book a Movie</a>
         <a href="{% url 'listMovie' %}" class="navbar-item">List a new Movie</a>
+        <a href="{% url 'movieShowings' %}" class="navbar-item">View All Showings</a>
+
         <a href="{% url 'newScreen' %}" class="navbar-item">Add screen</a>
         <a href="{% url 'showingMovie' %}" class="navbar-item">Create movie showing</a>
-        <a href="{% url 'bookMovie' %}" class="navbar-item">Book a Movie</a>
+
         <a href="{% url 'movie_List' %}" class="navbar-item">See Movies</a>
         <a href="{% url 'registerClub' %}" class="navbar-item">Register Club</a>
         <a href="{% url 'registerClubRep' %}" class="navbar-item">Register Club Rep</a>
         <a href="{% url 'accountList' %}" class="navbar-item">View Accounts</a>
         <a href="{% url 'discountRequests' %}" class="navbar-item">View Discount Requests</a>
         <a href="{% url 'requestDiscount' %}" class="navbar-item">Request Discount</a>
+        <a href="{% url 'displayMovieBookings' %}" class="navbar-item">View Bookings</a>
+        
+        <a href="{% url 'addTokensToWallet' %}" class="navbar-item">Initalise Tokens</a>
+        <a href="{% url 'showTokenWallet' %}" class="navbar-item">View Wallet</a>
+
+
         {% if user.is_authenticated %}
             <a href="{% url 'logout' %}" class="navbar-item">Logout</a>
         {% else %}
