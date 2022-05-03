@@ -39,7 +39,7 @@ class addNewScreen(models.Model):
     movieScreenSeatCapacity = models.IntegerField(validators=[MaxValueValidator(1000), MinValueValidator(1)], default=1)
 
     def __str__(self):
-        return self.movieScreenName + ' | Screen No: ' + str(self.movieScreen)
+        return self.movieScreenName + ' Number: ' + str(self.movieScreen)
 
 # Movie Time Slot Model - Details for a showing of a film into the database, uses data from Screen and MovieListing
 # Includes: Movie, Screening room, Date and Time
@@ -55,7 +55,7 @@ class movieTimeSlots(models.Model):
         return str(self.movieDesired) + ' is playing on: ' + str(date) + ' in screen: ' + str(self.movieScreen)
     
     def ticketingStr(self):
-        return str(self.movieDesired) + ' | ' + str(self.movieDate) + ' | ' + str(self.movieTime) + ' | ' + str(self.movieScreen)
+        return 'Movie Name: ' + str(self.movieDesired) + ' | On ' + str(self.movieDate) + ' at ' + str(self.movieTime) + ' | In Screen: ' + str(self.movieScreen)
 
     def ticketingPrice(self):
         return str(self.moviePrice)
@@ -64,9 +64,10 @@ class pickMovie(models.Model):
     movieTime = models.ForeignKey(movieTimeSlots, default=1, on_delete=models.CASCADE)
     movieTicketQuanity = models.IntegerField(default=1, validators=[MaxValueValidator(10000), MinValueValidator(0)])
     user = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
+    created = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.user) + ' | Your chosen movie is ' + str(self.movieTime.ticketingStr()) + ". Amount of tickets purchased: " + str(self.movieTicketQuanity) + " | Price Paid: " + str(self.movieTicketQuanity * int(self.movieTime.ticketingPrice()))
+        return 'User: ' + str(self.user) + ' | ' + str(self.movieTime.ticketingStr()) + ". Amount of tickets purchased: " + str(self.movieTicketQuanity) + " | Total Tokens Spent: " + str(self.movieTicketQuanity * int(self.movieTime.ticketingPrice()))
 
 class pickUser(models.Model):
     roles_CHOICES = (

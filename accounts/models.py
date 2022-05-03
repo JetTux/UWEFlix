@@ -14,7 +14,6 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 
-
 @receiver(user_signed_up)
 def user_signed_up_signal_handler(request, user, **kwargs):
     group = Group.objects.get(name='Student')

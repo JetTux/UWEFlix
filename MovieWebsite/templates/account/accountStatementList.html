@@ -1,0 +1,15 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Here are today's transactions</b></div>
+            <ul>
+                  {% for pickMovie in accountStatements %}
+                        <li>{{ pickMovie.created }}   -   {{ pickMovie }}
+                  {% endfor %}
+                  
+            </ul>
+            <a href="{% url 'statementsYear' %}">View This Year's Transactions</a> 
+            <a href="{% url 'statementsMonth' %}">View This Month's Transactions</a> 
+{% endblock %}

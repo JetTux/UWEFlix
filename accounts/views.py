@@ -4,12 +4,13 @@ from django.http import HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
-
+import datetime
 # from accounts.forms import RegistrationForm, AccountAuthenticationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
 from django.contrib.auth.models import User
+from MovieManaging.models import pickMovie
 from accounts.forms import *
 from accounts.models import *
 from MovieManaging.views import isAccountsManager
@@ -54,6 +55,31 @@ def allAccounts(request):
     studentClubs = studentClub.objects.all()
     clubReps = ClubRep.objects.all()
     return render(request, 'account/accountList.html', {'users':users, 'studentClubs':studentClubs, 'clubReps':clubReps})
+
+@login_required
+@user_passes_test(isAccountsManager)
+def allAccountStatements(request):
+    accountStatements = pickMovie.objects.all()
+    today = datetime.date.today()
+
+    accountStatements = list(accountStatements.filter(created=today))
+    return render(request, 'account/accountStatementList.html', {'accountStatements':accountStatements})
+
+@login_required
+@user_passes_test(isAccountsManager)
+def statementsYear(request):
+    accountStatements = pickMovie.objects.all()
+    today = datetime.date.today()
+    accountStatements = list(accountStatements.filter(created__year=today.year))
+    return render(request, 'account/statementYear.html', {'accountStatements':accountStatements})
+
+@login_required
+@user_passes_test(isAccountsManager)
+def statementsMonth(request):
+    accountStatements = pickMovie.objects.all()
+    today = datetime.date.today()
+    accountStatements = list(accountStatements.filter(created__month=today.month))
+    return render(request, 'account/statementMonth.html', {'accountStatements':accountStatements})
 
 @login_required
 @user_passes_test(isAccountsManager)
@@ -168,6 +194,7 @@ def deleteDiscount(request, discountList_id):
 
 #@login_required
 #@user_passes_test(isClubRep)
+## TO DO - Club rep or student can do this only
 def requestDiscount(request):
     form = discountListForm(request.POST or None)
 
