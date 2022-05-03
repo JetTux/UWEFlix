@@ -16,6 +16,12 @@ from django.contrib.auth.models import Group
 def isCinemaManager(User):
     return User.groups.filter(name='Cinema Manager').exists()
 
+def isCinemaOrAccountsManager(User):
+    if User.groups.filter(name='Accounts Manager').exists():
+        return User.groups.filter(name='Accounts Manager').exists()
+    elif User.groups.filter(name='Cinema Manager').exists():
+        return User.groups.filter(name='Cinema Manager').exists()
+
 def isAccountsManager(User):
     return User.groups.filter(name='Accounts Manager').exists()
 
@@ -91,7 +97,7 @@ def bookMovieShowing(request):
         return render(request, "MovieWebsite/pickTime.html", {"form": form})
 
 @login_required
-@user_passes_test(isCinemaManager)
+@user_passes_test(isCinemaOrAccountsManager)
 def allMovies(request):
     movie_list = movieListing.objects.all()
     return render(request, 'MovieWebsite/movieList.html', {'movie_list':movie_list})
@@ -114,7 +120,7 @@ def deleteMovies(request, movie_id):
 # Invloves: movieDesired, movieScreen, movieTime, movieDate
 
 @login_required
-@user_passes_test(isCinemaManager)
+@user_passes_test(isCinemaOrAccountsManager)
 def createMovieShowing(request):
     form = movieTimetableForm(request.POST or None)
 
@@ -132,7 +138,7 @@ def createMovieShowing(request):
 
 #@permission_required('auth.admin')
 @login_required
-@user_passes_test(isCinemaManager)
+@user_passes_test(isCinemaOrAccountsManager)
 def screenAdder(request):
     form = addNewScreenForm(request.POST or None)
 

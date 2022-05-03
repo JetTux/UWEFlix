@@ -16,7 +16,7 @@ class userForm(forms.ModelForm):
 class clubAccountForm(forms.ModelForm):
     class Meta:
         model = studentClub
-        fields = ['accountTitle', 'discountRate']
+        fields = ['accountTitle', 'discountPercentage']
 
 class clubRepUsernamePasswordForm(forms.ModelForm):
      class Meta:
@@ -36,7 +36,7 @@ class clubRepForm(forms.ModelForm):
 class addClubAccount(forms.ModelForm):
     class Meta:
         model = studentClub
-        fields = ['club', 'accountTitle', 'discountRate']
+        fields = ['club', 'accountTitle', 'discountPercentage']
 
 class addClub(forms.ModelForm):
      class Meta:
@@ -52,7 +52,7 @@ class addClubRep(forms.ModelForm):
 class discountListForm(forms.ModelForm):
     class Meta:
         model = discountList
-        fields = ("club", "newDiscountRate")
+        fields = ("club", "newDiscountPercentage")
 
 class clubRepLoginForm(forms.ModelForm):
     class Meta:

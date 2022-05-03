@@ -7,7 +7,19 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 from django.contrib.auth.models import User
 import uuid
+from django.core.validators import MaxValueValidator, MinValueValidator
 
+from allauth.account.signals import user_signed_up
+from django.dispatch import receiver
+from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
+
+
+@receiver(user_signed_up)
+def user_signed_up_signal_handler(request, user, **kwargs):
+    group = Group.objects.get(name='Student')
+    user.groups.add(group)
+    user.save()
 
 class clubDetails(models.Model):
     clubName = models.CharField(max_length=300)
@@ -26,7 +38,7 @@ class studentClub(models.Model):
     accountNumber = models.UUIDField(max_length=255, default = uuid.uuid4)
     club = models.ForeignKey(clubDetails, default=1, on_delete=models.SET_DEFAULT)
     accountTitle = models.CharField(max_length=300)
-    discountRate = models.CharField(max_length=300)
+    discountPercentage = models.IntegerField(validators=[MaxValueValidator(100), MinValueValidator(1)])
 
     def __str__(self):
         return str(self.accountTitle)
@@ -46,10 +58,10 @@ class ClubRep(models.Model):
 #New FV
 class discountList(models.Model):
     club = models.ForeignKey(studentClub, default=1, on_delete=models.SET_DEFAULT)
-    newDiscountRate = models.CharField(max_length=300)
+    newDiscountPercentage = models.IntegerField(validators=[MaxValueValidator(100), MinValueValidator(1)])
 
     def __str__(self):
-        return "Club: " + str(self.club) + " New discount rate: " + str(self.newDiscountRate)
+        return "Club: " + str(self.club) + " New discount percentage: " + str(self.newDiscountRate)
 
 class clubRepUser(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
