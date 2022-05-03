@@ -1,0 +1,13 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Your Wallet</b></div>
+            <ul>
+                  {% for userTokens in token_value %}
+                        <li>{{ userTokens }} 
+                        <a href="{% url 'updateTokenWallet' userTokens.id %}">Update</a> 
+                  {% endfor %}
+            </ul>
+{% endblock %}

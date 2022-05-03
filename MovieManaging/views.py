@@ -9,9 +9,11 @@ from django.utils.timezone import datetime
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.views.generic import UpdateView, DeleteView, ListView
-
+from django.db.models import Avg
+import json
 
 from django.contrib.auth.models import Group
+dateMessage = 0
 
 def isCinemaManager(User):
     return User.groups.filter(name='Cinema Manager').exists()
@@ -75,32 +77,80 @@ def pickShowingTime(request):
 
     if request.method == "POST":
         if form.is_valid():
-            message = form.cleaned_data['date']
-            print(message)
-           # request.session['date'] = message
-            #message.save()
-           # so = movieTimeSlots.objects.filter(movieDate=message)
-           # return render(request, '../pickTime.html', {'so': so})
-            return redirect("../pickTime")
+            global dateMessage
+            dateMessage = form.cleaned_data['date']
+            print(dateMessage)
+            return redirect("movieShowings")
     else:
+        print(form)
         return render(request, "MovieWebsite/bookMovie.html", {"form": form})
 
-def bookMovieShowing(request):
-    form = movieSelectionForm(request.POST or None)
-
+def addTokensToWallet(request):
+    form = tokenForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
             message = form.save(commit=False)
+            message.user = request.user
             message.save()
             return redirect("../home")
     else:
-        return render(request, "MovieWebsite/pickTime.html", {"form": form})
+        return render(request, "MovieWebsite/addTokens.html", {"form": form})
+
+def showTokenWallet(request):
+    token_value = userTokens.objects.filter(user=request.user.id)
+    return render(request, 'MovieWebsite/viewTokens.html', {'token_value':token_value})
+
+
+def updateTokenWallet(request, wallet_id):
+    tokens = userTokens.objects.get(pk=wallet_id)
+    print(userTokens.objects.filter(user=request.user.id).aggregate(Avg('tokenWallet')))
+    #print(movieTimeSlots.objects.filter(id=1).aggregate(Avg('moviePrice')))
+    #print(movieTimeSlots.objects.filter(id=1).aggregate('moviePrice')
+    #userTokens.objects.annotate(total_difference=F(''))
+    form = tokenForm(request.POST or None, instance=tokens)
+
+    if form.is_valid():
+        form.save()
+        return redirect ('home')
+    return render(request, 'MovieWebsite/updateWallet.html', {'tokens':tokens, 'form': form})
+
+def displayMovieBookings(request):
+    bookingList = pickMovie.objects.filter(user=request.user.id)
+    return render(request, 'MovieWebsite/bookingListings.html', {'bookingList':bookingList})
 
 @login_required
 @user_passes_test(isCinemaOrAccountsManager)
 def allMovies(request):
     movie_list = movieListing.objects.all()
     return render(request, 'MovieWebsite/movieList.html', {'movie_list':movie_list})
+
+def allShowings(request):
+    global dateMessage
+    if dateMessage == 0:
+        showing_list = movieTimeSlots.objects.all().order_by('movieDate')
+    else:
+        showing_list = movieTimeSlots.objects.filter(movieDate__range=[dateMessage, dateMessage]).order_by('movieDate')
+        dateMessage = 0
+    return render(request, 'MovieWebsite/movieShowings.html', {'showing_list':showing_list})
+
+def bookShowing(request, screening_id):
+    print(screening_id)
+    screening = movieTimeSlots.objects.get(pk=screening_id)
+    print(screening)
+    form = movieSelectionForm(request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.user = request.user
+            message.movieTime_id = screening_id
+            message.save()
+            return redirect ('movieShowings')
+    else:
+        return render(request, 'MovieWebsite/bookMovieShowing.html', {'screening':screening, 'form': form})
+
+def bookMovieShowing(request):
+    return render(request)
+
 
 def updateMovies(request, movie_id):
     movie = movieListing.objects.get(pk=movie_id)

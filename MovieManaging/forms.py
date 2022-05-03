@@ -22,10 +22,14 @@ class addNewScreenForm(forms.ModelForm):
 class movieTimetableForm(forms.ModelForm):
     class Meta:
         model = movieTimeSlots
-        fields = ("movieDesired", "movieScreen", "movieTime",)
+        fields = ("movieDesired", "movieScreen", "movieTime", "movieDate", "moviePrice",)
 
-class movieSelectionForm(forms.Form):
-        model = ModelChoiceField(queryset=movieTimeSlots.objects.all())
+class movieSelectionForm(forms.ModelForm):
+        #model = ModelChoiceField(queryset=movieTimeSlots.objects.all())
+    class Meta:
+        model = pickMovie
+        fields = ("movieTicketQuanity",)
+
 
 class pickUserForm(forms.ModelForm):
     class Meta:
@@ -37,3 +41,8 @@ class MyDateInput(forms.widgets.DateInput):
 
 class pickTimeForm(forms.Form):
     date = forms.DateField(widget=MyDateInput())
+
+class tokenForm(forms.ModelForm):
+    class Meta:
+        model = userTokens
+        fields = ("tokenWallet",)
