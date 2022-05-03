@@ -46,19 +46,27 @@ class addNewScreen(models.Model):
 class movieTimeSlots(models.Model):
     movieDesired = models.ForeignKey(movieListing, default=1, on_delete=models.SET_DEFAULT)
     movieScreen = models.ForeignKey(addNewScreen, default=1, on_delete=models.SET_DEFAULT)
-    movieTime = models.DateTimeField()
+    movieTime = models.TimeField()
     movieDate = models.DateField()
+    moviePrice = models.IntegerField(default=10)
 
     def __str__(self):
-        date = (self.movieTime)
-        return str(self.movieDesired) + ' is playing at: ' + str(date) + ' in screen: ' + str(self.movieScreen)
+        date = (self.movieDate)
+        return str(self.movieDesired) + ' is playing on: ' + str(date) + ' in screen: ' + str(self.movieScreen)
+    
+    def ticketingStr(self):
+        return str(self.movieDesired) + ' | ' + str(self.movieDate) + ' | ' + str(self.movieTime) + ' | ' + str(self.movieScreen)
+
+    def ticketingPrice(self):
+        return str(self.moviePrice)
 
 class pickMovie(models.Model):
-    movieTitle = models.ForeignKey(movieListing, default=1, on_delete=models.SET_DEFAULT)
-    movieTime = models.ForeignKey(movieTimeSlots, default=1, on_delete=models.SET_DEFAULT)
+    movieTime = models.ForeignKey(movieTimeSlots, default=1, on_delete=models.CASCADE)
+    movieTicketQuanity = models.IntegerField(default=1, validators=[MaxValueValidator(10000), MinValueValidator(0)])
+    user = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return 'Your chosen movie is ' + str(self.movieTitle) + ' at ' + str(self.movieTime)
+        return str(self.user) + ' | Your chosen movie is ' + str(self.movieTime.ticketingStr()) + ". Amount of tickets purchased: " + str(self.movieTicketQuanity) + " | Price Paid: " + str(self.movieTicketQuanity * int(self.movieTime.ticketingPrice()))
 
 class pickUser(models.Model):
     roles_CHOICES = (
@@ -85,3 +93,10 @@ class ClubRep(models.Model):
     cr_email = models.EmailField()
     cr_landline = models.IntegerField()
     cr_mobile = models.IntegerField()
+
+class userTokens(models.Model):
+    tokenWallet = models.IntegerField(default=0, validators=[MaxValueValidator(10000), MinValueValidator(0)])
+    user = models.OneToOneField(User, blank=True, unique=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "Hello " + str(self.user) + ", you have: " + str(self.tokenWallet) + " tokens in your wallet."
