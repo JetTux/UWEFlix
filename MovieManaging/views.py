@@ -10,19 +10,12 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.views.generic import UpdateView, DeleteView, ListView
 from django.db.models import Avg
-import json
-
 from django.contrib.auth.models import Group
+from django.db.models import Sum
 dateMessage = 0
 
 def isCinemaManager(User):
     return User.groups.filter(name='Cinema Manager').exists()
-
-def isCinemaOrAccountsManager(User):
-    if User.groups.filter(name='Accounts Manager').exists():
-        return User.groups.filter(name='Accounts Manager').exists()
-    elif User.groups.filter(name='Cinema Manager').exists():
-        return User.groups.filter(name='Cinema Manager').exists()
 
 def isAccountsManager(User):
     return User.groups.filter(name='Accounts Manager').exists()
@@ -107,6 +100,7 @@ def updateTokenWallet(request, wallet_id):
     #print(movieTimeSlots.objects.filter(id=1).aggregate(Avg('moviePrice')))
     #print(movieTimeSlots.objects.filter(id=1).aggregate('moviePrice')
     #userTokens.objects.annotate(total_difference=F(''))
+
     form = tokenForm(request.POST or None, instance=tokens)
 
     if form.is_valid():
@@ -119,7 +113,7 @@ def displayMovieBookings(request):
     return render(request, 'MovieWebsite/bookingListings.html', {'bookingList':bookingList})
 
 @login_required
-@user_passes_test(isCinemaOrAccountsManager)
+@user_passes_test(isCinemaManager)
 def allMovies(request):
     movie_list = movieListing.objects.all()
     return render(request, 'MovieWebsite/movieList.html', {'movie_list':movie_list})
@@ -143,7 +137,55 @@ def bookShowing(request, screening_id):
             message = form.save(commit=False)
             message.user = request.user
             message.movieTime_id = screening_id
-            message.save()
+            
+            # Obtains the id value for the screen used.
+            screeningChoice = movieTimeSlots.objects.get(id=screening_id)
+            screeningID = screeningChoice.movieScreen_id
+            print("Screen ID: " + str(screeningID))
+
+            # Obtains the seat capacity at the movie screening.
+            movieSeats = addNewScreen.objects.filter(id=screeningID)
+            movieSeatsTotal = movieSeats.aggregate(Sum('movieScreenSeatCapacity'))
+            movieSeatsTotalConverted = movieSeatsTotal['movieScreenSeatCapacity__sum']
+
+            # Obtains the total tickets purchased for the movie screening.
+            movieInstance = pickMovie.objects.filter(movieTime_id=screening_id)
+            totalTicketsPurchased = movieInstance.aggregate(Sum('movieTicketQuanity'))
+            totalTicketsPurchasedConverted = totalTicketsPurchased['movieTicketQuanity__sum']
+
+            # Calculates the remaining seats for the movie showing.
+            remainingSeats = movieSeatsTotalConverted - totalTicketsPurchasedConverted
+            print("Remaining Seats: " + str(remainingSeats))
+
+            # Takes the ticket quantity from the form.
+            ticketQuantity = (form.data['movieTicketQuanity'])
+
+            # Obtains the ticket price for the selected showing.
+            modelInstance = movieTimeSlots.objects.get(id=screening_id)
+            ticketPrice = modelInstance.moviePrice
+
+            # Calculates the total token cost of the purchase.
+            ticketCost = (int(ticketPrice) * int(ticketQuantity))
+
+            # Obtains the user's wallet.
+            userWalletModel = userTokens.objects.get(user_id=request.user)
+            userWallet = userWalletModel.tokenWallet
+            print("Wallet before: " + str(userWallet))
+
+            # Calculates the remaining tokens in the wallet.
+            newUserWallet = (int(userWallet) - int(ticketCost))
+            
+            if remainingSeats > 0:
+                if newUserWallet > 0:
+                    userTokens.objects.filter(user=request.user).update(tokenWallet=newUserWallet)
+                    message.save()    
+                else:
+                    print("Not Enough Tokens.")
+            else:
+                print("Not enough seats.")
+
+            
+            print("Wallet before: " + str(newUserWallet))
             return redirect ('movieShowings')
     else:
         return render(request, 'MovieWebsite/bookMovieShowing.html', {'screening':screening, 'form': form})
@@ -170,7 +212,7 @@ def deleteMovies(request, movie_id):
 # Invloves: movieDesired, movieScreen, movieTime, movieDate
 
 @login_required
-@user_passes_test(isCinemaOrAccountsManager)
+@user_passes_test(isCinemaManager)
 def createMovieShowing(request):
     form = movieTimetableForm(request.POST or None)
 
@@ -188,7 +230,7 @@ def createMovieShowing(request):
 
 #@permission_required('auth.admin')
 @login_required
-@user_passes_test(isCinemaOrAccountsManager)
+@user_passes_test(isCinemaManager)
 def screenAdder(request):
     form = addNewScreenForm(request.POST or None)
 
