@@ -15,6 +15,9 @@
                 {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
                     <div class="error-message">{{ message }}</div>
                 {% endif %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    <div class="error-message">{{ message }}</div>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}

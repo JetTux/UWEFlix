@@ -148,70 +148,72 @@ def bookShowing(request, screening_id):
     if request.method == "POST":
         if form.is_valid():
             message = form.save(commit=False)
-            message.user = request.user
-            message.movieTime_id = screening_id
-            
-            # Obtains the id value for the screen used.
-            screeningChoice = movieTimeSlots.objects.get(id=screening_id)
-            screeningID = screeningChoice.movieScreen_id
-            print("Screen ID: " + str(screeningID))
+            if request.user.is_authenticated:
+                message.user = request.user
+                message.movieTime_id = screening_id
+                
+                # Obtains the id value for the screen used.
+                screeningChoice = movieTimeSlots.objects.get(id=screening_id)
+                screeningID = screeningChoice.movieScreen_id
 
-            # Obtains the seat capacity at the movie screening.
-            movieSeats = addNewScreen.objects.filter(id=screeningID)
-            movieSeatsTotal = movieSeats.aggregate(Sum('movieScreenSeatCapacity'))
-            movieSeatsTotalConverted = movieSeatsTotal['movieScreenSeatCapacity__sum']
+                # Obtains the seat capacity at the movie screening.
+                movieSeats = addNewScreen.objects.filter(id=screeningID)
+                movieSeatsTotal = movieSeats.aggregate(Sum('movieScreenSeatCapacity'))
+                movieSeatsTotalConverted = movieSeatsTotal['movieScreenSeatCapacity__sum']
 
-            # Obtains the total tickets purchased for the movie screening.
-            movieInstance = pickMovie.objects.filter(movieTime_id=screening_id)
-            totalTicketsPurchased = movieInstance.aggregate(Sum('movieTicketQuanity'))
-            totalTicketsPurchasedConverted = totalTicketsPurchased['movieTicketQuanity__sum']
+                # Obtains the total tickets purchased for the movie screening.
+                movieInstance = pickMovie.objects.filter(movieTime_id=screening_id)
+                totalTicketsPurchased = movieInstance.aggregate(Sum('movieTicketQuanity'))
+                totalTicketsPurchasedConverted = totalTicketsPurchased['movieTicketQuanity__sum']
 
-            # Calculates the remaining seats for the movie showing.
-            remainingSeats = movieSeatsTotalConverted - totalTicketsPurchasedConverted
-            print("Remaining Seats: " + str(remainingSeats))
+                # Calculates the remaining seats for the movie showing.
+                remainingSeats = movieSeatsTotalConverted - totalTicketsPurchasedConverted
 
-            # Takes the ticket quantity from the form.
-            ticketQuantity = (form.data['movieTicketQuanity'])
-            print(accounts.views.clubRepLoginSuccessful)
-            if accounts.views.clubRepLoginSuccessful == True:
-                if int(ticketQuantity) < 10:
-                    messages.error(request, 'Sorry, Club reps have to purchase a minimum of 10 tickets')
-                    return redirect ('../movieShowingsClubRep')
+                # Takes the ticket quantity from the form.
+                ticketQuantity = (form.data['movieTicketQuanity'])
+                if accounts.views.clubRepLoginSuccessful == True:
+                    if int(ticketQuantity) < 10:
+                        messages.error(request, 'Sorry, Club reps have to purchase a minimum of 10 tickets')
+                        return redirect ('../movieShowingsClubRep')
 
-            # Obtains the ticket price for the selected showing.
-            modelInstance = movieTimeSlots.objects.get(id=screening_id)
-            ticketPrice = modelInstance.moviePrice
+                # Obtains the ticket price for the selected showing.
+                modelInstance = movieTimeSlots.objects.get(id=screening_id)
+                ticketPrice = modelInstance.moviePrice
 
-            # Calculates the total token cost of the purchase.
-            ticketCost = (int(ticketPrice) * int(ticketQuantity))
+                # Calculates the total token cost of the purchase.
+                ticketCost = (int(ticketPrice) * int(ticketQuantity))
 
-            if accounts.views.clubRepLoginSuccessful == True:
-                print(ticketCost)
-                print((int(accounts.views.discount)/100))
-                discountAmount = ticketCost * (int(accounts.views.discount)/100)
-                ticketCost = ticketCost - discountAmount 
-                print(ticketCost)
+                if accounts.views.clubRepLoginSuccessful == True:
+                    discountAmount = ticketCost * (int(accounts.views.discount)/100)
+                    ticketCost = ticketCost - discountAmount 
 
-            # Obtains the user's wallet.
-            userWalletModel = userTokens.objects.get(user_id=request.user)
-            userWallet = userWalletModel.tokenWallet
-            print("Wallet before: " + str(userWallet))
-
-            # Calculates the remaining tokens in the wallet.
-            newUserWallet = (int(userWallet) - int(ticketCost))
-            
-            if remainingSeats > 0:
-                if newUserWallet > 0:
-                    userTokens.objects.filter(user=request.user).update(tokenWallet=newUserWallet)
-                    message.save()    
+                # Obtains the user's wallet.
+                if userTokens.objects.get(user_id=request.user):
+                    userWalletModel = userTokens.objects.get(user_id=request.user)
+                    userWallet = userWalletModel.tokenWallet
                 else:
-                    print("Not Enough Tokens.")
-            else:
-                print("Not enough seats.")
+                    messages.error(request, 'You have not created a wallet, please do so in Initialise Tokens')
+                    return redirect ('../movieShowings')
 
-            
-            print("Wallet before: " + str(newUserWallet))
-            return redirect ('movieShowings')
+                # Calculates the remaining tokens in the wallet.
+                newUserWallet = (int(userWallet) - int(ticketCost))
+                print("did it")
+                if remainingSeats > 0:
+                    print("did it")
+                    if newUserWallet > 0:
+                        userTokens.objects.filter(user=request.user).update(tokenWallet=newUserWallet)
+                        message.save()    
+                        messages.info(request, 'Booking accepted')
+                        return redirect ('../movieShowings')
+                    else:
+                        messages.error(request, 'Sorry, You do not have enough tokens for this purchase')
+                        return redirect ('../movieShowings')
+                else:
+                    messages.error(request, 'Sorry, there are not enough seats available')
+                    return redirect ('../movieShowings')
+            else:
+                messages.error(request, 'Log in')
+                return redirect ('../movieShowings')
     else:
         return render(request, 'MovieWebsite/bookMovieShowing.html', {'screening':screening, 'form': form})
 

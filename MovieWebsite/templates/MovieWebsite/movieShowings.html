@@ -11,4 +11,16 @@
     {% endfor %}
 </ul>
 <a href="{% url 'loginClubRep' %}">Book as a Club Rep</a> 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+            <div class="error-message">{{ message }}</div>
+        {% endif %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    <div class="error-message">{{ message }}</div>
+        {% endif %}
+    {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}
