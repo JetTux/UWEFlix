@@ -31,6 +31,10 @@ urlpatterns = [
     path("movieShowingsClubRep/", allShowingsClubRep, name='movieShowingsClubRep'),
     path("allShowings/", allShowingsForUpdating, name='allShowings'),
     path("updateShowings/<showing_id>", updateShowings, name='updateShowings'),
+    path("requestCancellation/<booking_id>", requestCancellation, name='requestCancellation'),
+    path("cancellationRequests/", cancellationRequests, name='cancellationRequests'),
+    path('deleteBooking/<pickMovie_id>', deleteBooking, name='delete_booking'),
+    path('deleteDiscount/<pickMovie_id>', deleteRequest, name='delete_request'),
     
  #   path("bookMovieShowingClubRep/<screening_id>", bookShowingClubRep, name='bookMovieShowingClubRep'),
     #path('login/', login_view, name="login"),

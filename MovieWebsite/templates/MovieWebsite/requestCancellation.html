@@ -1,0 +1,11 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Cancel Booking?</b></div>
+      <form method="post">{% csrf_token %}
+         <p>Are you sure you want to cancel this booking?</p>
+         <input type="submit" value="Confirm">
+      </form>
+{% endblock %}

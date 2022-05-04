@@ -65,6 +65,7 @@ class pickMovie(models.Model):
     movieTicketQuanity = models.IntegerField(default=1, validators=[MaxValueValidator(10000), MinValueValidator(0)])
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     created = models.DateField(auto_now_add=True)
+    cancelRequested = models.BooleanField(blank=True, null=True)
 
     def __str__(self):
         return 'User: ' + str(self.user) + ' | ' + str(self.movieTime.ticketingStr()) + ". Amount of tickets purchased: " + str(self.movieTicketQuanity) + " | Total Tokens Spent: " + str(self.movieTicketQuanity * int(self.movieTime.ticketingPrice()))

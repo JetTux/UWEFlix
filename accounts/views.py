@@ -22,6 +22,15 @@ discount = 0
 
 def isCinemaManager(User):
     return User.groups.filter(name='Cinema Manager').exists()
+def isStudent(User):
+    return User.groups.filter(name='Student').exists()
+def isClubRep(User):
+    return User.groups.filter(name='Club Rep').exists()
+def isStudentOrClubRep(User):
+    if User.groups.filter(name='Student').exists():
+        return User.groups.filter(name='Student').exists()
+    elif User.groups.filter(name='Club Rep').exists():
+        return User.groups.filter(name='Club Rep').exists()
 
 def isCinemaOrAccountsManager(User):
     if User.groups.filter(name='Accounts Manager').exists():
@@ -202,9 +211,6 @@ def deleteDiscount(request, discountList_id):
     discountRequest.delete()
     return redirect ('discountRequests')
 
-#@login_required
-#@user_passes_test(isClubRep)
-## TO DO - Club rep or student can do this only
 def requestDiscount(request):
     form = discountListForm(request.POST or None)
 

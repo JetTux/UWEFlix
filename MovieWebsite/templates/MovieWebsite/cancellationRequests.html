@@ -1,0 +1,14 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Booking Cancellation Requests</b></div>
+            <ul>
+                  {% for pickMovie in requests %}
+                        <li>Name: {{ pickMovie }} 
+                        <a href="{% url 'delete_booking' pickMovie.id %}">Delete Booking</a> 
+                        <a href="{% url 'delete_request' pickMovie.id %}">Delete Request</a></li> 
+                  {% endfor %}
+            </ul>
+{% endblock %}

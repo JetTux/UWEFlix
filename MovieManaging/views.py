@@ -117,6 +117,7 @@ def updateTokenWallet(request, wallet_id):
         return redirect ('home')
     return render(request, 'MovieWebsite/updateWallet.html', {'tokens':tokens, 'form': form})
 
+@login_required
 def displayMovieBookings(request):
     bookingList = pickMovie.objects.filter(user=request.user.id)
     return render(request, 'MovieWebsite/bookingListings.html', {'bookingList':bookingList})
@@ -286,6 +287,29 @@ def screenAdder(request):
             return redirect("../home")
     else:
         return render(request, "MovieWebsite/newScreen.html", {"form": form})
+
+@login_required
+@user_passes_test(isCinemaOrAccountsManager)
+def cancellationRequests(request):
+    requests = pickMovie.objects.filter(cancelRequested=True)
+    return render(request, 'MovieWebsite/cancellationRequests.html', {'requests':requests})
+
+def deleteBooking(request, pickMovie_id):
+    booking = pickMovie.objects.get(pk=pickMovie_id)
+    booking.delete()
+    return redirect ('cancellationRequests')
+
+def deleteRequest(request, pickMovie_id):
+    cancelRequest = pickMovie.objects.get(pk=pickMovie_id)
+    cancelRequest.cancelRequested = False
+    cancelRequest.save()
+    return redirect ('cancellationRequests')
+
+def requestCancellation(request, booking_id):
+    cancelRequest = pickMovie.objects.get(pk=booking_id)
+    cancelRequest.cancelRequested = True
+    cancelRequest.save()
+    return redirect ('discountRequests')
 
 #@permission_required('auth.admin')
 def chooseUserRole(request):

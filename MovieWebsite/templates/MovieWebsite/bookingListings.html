@@ -3,10 +3,10 @@
 {% block title %}
 {% endblock %}
 {% block content %}
-<div style="font-size: 40px;"><b>Movies</b></div>
+<div style="font-size: 40px;"><b>Bookings</b></div>
             <ul>
                 {% for pickMovie in bookingList %}
-                        <li>Name: {{ pickMovie }} 
+                        <li>{{ pickMovie }} <a href="{% url 'requestCancellation' pickMovie.id %}">Request Cancellation</a></li> 
                 {% endfor %}
             </ul>
 {% endblock %}
