@@ -8,7 +8,7 @@
     {% for movieTimeSlots in showing_list %}
           <li>{{ movieTimeSlots }} 
           <a href="{% url 'bookMovieShowing' movieTimeSlots.id %}">Book</a> 
-
     {% endfor %}
 </ul>
+<a href="{% url 'loginClubRep' %}">Book as a Club Rep</a> 
 {% endblock %}

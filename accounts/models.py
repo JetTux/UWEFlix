@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 import uuid
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from allauth.account.signals import user_signed_up
+from allauth.account.signals import user_signed_up, user_logged_in
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
@@ -19,6 +19,11 @@ def user_signed_up_signal_handler(request, user, **kwargs):
     group = Group.objects.get(name='Student')
     user.groups.add(group)
     user.save()
+
+@receiver(user_logged_in)
+def user_logged_in_signal_handler(request, user, **kwargs):
+    global clubRepLoginSuccessful 
+    clubRepLoginSuccessful = False
 
 class clubDetails(models.Model):
     clubName = models.CharField(max_length=300)
@@ -45,6 +50,7 @@ class studentClub(models.Model):
 class ClubRep(models.Model):
     accountNumber = models.UUIDField(max_length=255, default = uuid.uuid4)
     accountPassword = models.UUIDField(max_length=255, default = uuid.uuid4)
+    club = models.ForeignKey(studentClub, default=1, on_delete=models.SET_DEFAULT)
 
     firstname = models.CharField(max_length=300)
     surname = models.CharField(max_length=300)

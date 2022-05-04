@@ -3,6 +3,7 @@
 {% endblock %}
 {% block content %}
 <div style="font-size: 40px;"><b>Club Rep Login</b></div>
+<h1>Please Enter Your Club Rep Account Number and Password</h1>
     <form method="POST" action="">
         {% csrf_token %}
         <form>
@@ -10,10 +11,12 @@
               <label for="exampleInputNumber1" class="form-label">Account Number</label>
               <input type="username" class="form-control" name="username">
             </div>
+            <ul> 
             <div class="mb-3">
               <label for="exampleInputPassword1" class="form-label">Password</label>
               <input type="password" class="form-control" name="password">
             </div>
+            </ul>
         {{ form.as_p }}
         <button type="submit" value="Submit" class="save btn btn-secondary">Submit</button>
     </form>

@@ -10,12 +10,15 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
 from django.contrib.auth.models import User
+from django.views import View
 from MovieManaging.models import pickMovie
 from accounts.forms import *
 from accounts.models import *
-from MovieManaging.views import isAccountsManager
 
 from django.core.mail import send_mail
+
+clubRepLoginSuccessful = False
+discount = 0
 
 def isCinemaManager(User):
     return User.groups.filter(name='Cinema Manager').exists()
@@ -30,15 +33,22 @@ def isAccountsManager(User):
     return User.groups.filter(name='Accounts Manager').exists()
 
 def clubRepLogin(request):
+    global clubRepLoginSuccessful
+    global discount
     if request.method == "POST":
             accountNum = request.POST['username']
             password = request.POST['password']
             # TO DO - Make sure it sends a 404 when something other than a uuid is entered
-            #       - Make sure a flag is set to say that a club rep is 'logged in'
             if ClubRep.objects.filter(accountNumber=accountNum, accountPassword=password):
-                return redirect('../../home')
+                clubRepLoginSuccessful = True
+
+                clubRep = ClubRep.objects.get(accountNumber=accountNum)
+                discount = clubRep.club.discountPercentage
+                print(clubRepLoginSuccessful)
+                return redirect('../../movieShowingsClubRep')
             else:
-                return redirect('../login')
+                clubRepLoginSuccessful = False
+                return redirect('../loginClubRep')
     else:
         return render(request, 'account/loginClubRep.html')
 
@@ -205,6 +215,8 @@ def requestDiscount(request):
             return redirect("../../home")
     else:
         return render(request, "account/requestDiscount.html", {"form": form})
+
+    #return render(request, "account/stripeCheckout.html")
 
 #def deleteMovies(request, movie_id):
 #    movie = movieListing.objects.get(pk=movie_id)

@@ -2,9 +2,11 @@ import re
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse_lazy
+from django.views import View
 from MovieManaging.forms import *
 from MovieManaging.models import *
 from django.http import HttpResponse
+from django.contrib import messages
 from django.utils.timezone import datetime
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
@@ -12,6 +14,7 @@ from django.views.generic import UpdateView, DeleteView, ListView
 from django.db.models import Avg
 from django.contrib.auth.models import Group
 from django.db.models import Sum
+import accounts.views 
 dateMessage = 0
 
 def isCinemaManager(User):
@@ -127,6 +130,16 @@ def allShowings(request):
         dateMessage = 0
     return render(request, 'MovieWebsite/movieShowings.html', {'showing_list':showing_list})
 
+def allShowingsClubRep(request):
+    global dateMessage
+    if dateMessage == 0:
+        showing_list = movieTimeSlots.objects.all().order_by('movieDate')
+    else:
+        showing_list = movieTimeSlots.objects.filter(movieDate__range=[dateMessage, dateMessage]).order_by('movieDate')
+        dateMessage = 0
+    return render(request, 'MovieWebsite/movieShowingsClubRep.html', {'showing_list':showing_list})
+
+
 def bookShowing(request, screening_id):
     print(screening_id)
     screening = movieTimeSlots.objects.get(pk=screening_id)
@@ -159,6 +172,11 @@ def bookShowing(request, screening_id):
 
             # Takes the ticket quantity from the form.
             ticketQuantity = (form.data['movieTicketQuanity'])
+            print(accounts.views.clubRepLoginSuccessful)
+            if accounts.views.clubRepLoginSuccessful == True:
+                if int(ticketQuantity) < 10:
+                    messages.error(request, 'Sorry, Club reps have to purchase a minimum of 10 tickets')
+                    return redirect ('../movieShowingsClubRep')
 
             # Obtains the ticket price for the selected showing.
             modelInstance = movieTimeSlots.objects.get(id=screening_id)
@@ -166,6 +184,13 @@ def bookShowing(request, screening_id):
 
             # Calculates the total token cost of the purchase.
             ticketCost = (int(ticketPrice) * int(ticketQuantity))
+
+            if accounts.views.clubRepLoginSuccessful == True:
+                print(ticketCost)
+                print((int(accounts.views.discount)/100))
+                discountAmount = ticketCost * (int(accounts.views.discount)/100)
+                ticketCost = ticketCost - discountAmount 
+                print(ticketCost)
 
             # Obtains the user's wallet.
             userWalletModel = userTokens.objects.get(user_id=request.user)
@@ -241,7 +266,6 @@ def screenAdder(request):
             return redirect("../home")
     else:
         return render(request, "MovieWebsite/newScreen.html", {"form": form})
-
 
 #@permission_required('auth.admin')
 def chooseUserRole(request):

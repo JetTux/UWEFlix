@@ -1,10 +1,6 @@
 # from accounts.models import Account
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import get_user_model
-from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth import authenticate
-from django.contrib.auth.models import User, AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import User
 
 from accounts.models import *
 
@@ -31,7 +27,7 @@ class clubAccountNumberForm(forms.ModelForm):
 class clubRepForm(forms.ModelForm):
      class Meta:
          model = ClubRep
-         fields = ['firstname', 'surname', 'dateOfBirth', 'accountEmail']
+         fields = ['firstname', 'surname', 'dateOfBirth', 'accountEmail', 'club']
 
 class addClubAccount(forms.ModelForm):
     class Meta:
@@ -46,7 +42,7 @@ class addClub(forms.ModelForm):
 class addClubRep(forms.ModelForm):
      class Meta:
          model = ClubRep
-         fields = ['firstname', 'surname', 'dateOfBirth', 'accountEmail']
+         fields = ['firstname', 'surname', 'dateOfBirth', 'accountEmail', 'club']
 
 #New FV
 class discountListForm(forms.ModelForm):

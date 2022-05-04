@@ -28,6 +28,9 @@ urlpatterns = [
     path("updateWallet/<wallet_id>", updateTokenWallet, name='updateTokenWallet'),
     path("movieShowings/", allShowings, name='movieShowings'),
     path("bookMovieShowing/<screening_id>", bookShowing, name='bookMovieShowing'),
+    path("movieShowingsClubRep/", allShowingsClubRep, name='movieShowingsClubRep'),
+    
+ #   path("bookMovieShowingClubRep/<screening_id>", bookShowingClubRep, name='bookMovieShowingClubRep'),
     #path('login/', login_view, name="login"),
     #path('logout/', logout_view, name="logout"),
     #path('register/', register_view, name="register"),
