@@ -1,7 +1,4 @@
-from django.contrib import admin
-from django.urls import include, path
-from django.conf import settings
-from django.conf.urls.static import static
+from django.urls import path
 from accounts.views import *
 
 urlpatterns = [
@@ -16,7 +13,6 @@ urlpatterns = [
     path("createClubAccount/", createClubAccount, name="createClubAccount"),
     path("registerClub/", clubRegister, name="registerClub"),
     path("registerClubRep/", clubRepRegister, name="registerClubRep"),
-    #New FV
     path('discountRequests/', discountRequests, name='discountRequests'),
     path('updateDiscount/<discountList_club>', updateDiscount, name='update_discount'),
     path('deleteDiscount/<discountList_id>', deleteDiscount, name='delete_discount'),

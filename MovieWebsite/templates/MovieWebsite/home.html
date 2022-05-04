@@ -1,5 +1,6 @@
 {% extends "MovieWebsite/layout.html" %}
 {% block title %}
+{% load static %}
 {% endblock %}
 {% block content %}
     {% if user.is_authenticated %}
@@ -7,4 +8,15 @@
     {% else %}
         <p>You are not logged in</p>
     {% endif %}
+    <div style="font-size: 40px;"><b>Now Showing!</b></div>
+    <div class="container">
+    {% for movieListing in movie_list %}
+
+        <a href="{% url 'bookMovieShowing' movieListing.id %}"><img src="{{ movieListing.movieImage.url }}" allign="left" width="145" height="216"></a>
+
+
+
+
+        {% endfor %}
+    </ul>
 {% endblock %}

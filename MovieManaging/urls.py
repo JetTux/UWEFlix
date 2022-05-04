@@ -1,14 +1,5 @@
-from django.contrib import admin
-from django.urls import include, path
-from django.conf import settings
-from django.conf.urls.static import static
-#from accounts.forms import RegistrationForm
-#from accounts.views import register_view, login_view, logout_view
+from django.urls import  path
 from .views import *
-
-
-#https://django-allauth.readthedocs.io/en/latest/installation.html
-#pip install django-environ
 
 urlpatterns = [
     path("showingMovie/", createMovieShowing, name="showingMovie"),
@@ -34,11 +25,5 @@ urlpatterns = [
     path("requestCancellation/<booking_id>", requestCancellation, name='requestCancellation'),
     path("cancellationRequests/", cancellationRequests, name='cancellationRequests'),
     path('deleteBooking/<pickMovie_id>', deleteBooking, name='delete_booking'),
-    path('deleteDiscount/<pickMovie_id>', deleteRequest, name='delete_request'),
-    
- #   path("bookMovieShowingClubRep/<screening_id>", bookShowingClubRep, name='bookMovieShowingClubRep'),
-    #path('login/', login_view, name="login"),
-    #path('logout/', logout_view, name="logout"),
-    #path('register/', register_view, name="register"),
-    
+    path('deleteDiscount/<pickMovie_id>', deleteRequest, name='delete_request'),  
 ] 

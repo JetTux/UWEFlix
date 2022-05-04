@@ -9,4 +9,14 @@
                         <li>{{ pickMovie }} <a href="{% url 'requestCancellation' pickMovie.id %}">Request Cancellation</a></li> 
                 {% endfor %}
             </ul>
-{% endblock %}
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                    <div class="error-message">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endblock %}

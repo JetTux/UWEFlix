@@ -10,4 +10,13 @@
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default">Add club account</button>
     </form>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                <div class="error-message">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}

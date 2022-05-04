@@ -1,16 +1,10 @@
-import email
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import logout
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 import datetime
-# from accounts.forms import RegistrationForm, AccountAuthenticationForm
 from django.contrib.auth import get_user_model
-from django.contrib.auth.backends import ModelBackend
-
 from django.contrib.auth.models import User
-from django.views import View
 from MovieManaging.models import pickMovie
 from accounts.forms import *
 from accounts.models import *
@@ -24,14 +18,6 @@ def isCinemaManager(User):
     return User.groups.filter(name='Cinema Manager').exists()
 def isStudent(User):
     return User.groups.filter(name='Student').exists()
-def isClubRep(User):
-    return User.groups.filter(name='Club Rep').exists()
-def isStudentOrClubRep(User):
-    if User.groups.filter(name='Student').exists():
-        return User.groups.filter(name='Student').exists()
-    elif User.groups.filter(name='Club Rep').exists():
-        return User.groups.filter(name='Club Rep').exists()
-
 def isCinemaOrAccountsManager(User):
     if User.groups.filter(name='Accounts Manager').exists():
         return User.groups.filter(name='Accounts Manager').exists()
@@ -47,7 +33,6 @@ def clubRepLogin(request):
     if request.method == "POST":
             accountNum = request.POST['username']
             password = request.POST['password']
-            # TO DO - Make sure it sends a 404 when something other than a uuid is entered
             if ClubRep.objects.filter(accountNumber=accountNum, accountPassword=password):
                 clubRepLoginSuccessful = True
 
@@ -97,7 +82,7 @@ def statementsYear(request):
 def statementsMonth(request):
     accountStatements = pickMovie.objects.all()
     today = datetime.date.today()
-    accountStatements = list(accountStatements.filter(created__month=today.month))
+    accountStatements = list(accountStatements.filter(created__month=today.month, created__year=today.year))
     return render(request, 'account/statementMonth.html', {'accountStatements':accountStatements})
 
 @login_required
@@ -161,6 +146,9 @@ def createClubAccount(request):
             message = form.save(commit=False)
             message.save()
             return redirect("../../home")
+        else:
+            messages.info(request, 'Club Accounts Details Invalid.')
+            return redirect('createClubAccount')
     else:
         return render(request, "account/addClubAccount.html", {"form": form})
 
@@ -175,6 +163,9 @@ def clubRegister(request):
             message.save()
 
             return redirect('../../home')
+        else:
+            messages.info(request, 'Club Details Invalid.')
+            return redirect('registerClub')
     else:
         return render(request, 'account/registerClub.html', {'form': form})
 
@@ -187,10 +178,12 @@ def clubRepRegister(request):
             message = form.save(commit=False)
             message.save()
             return redirect('../../home')
+        else:
+            messages.info(request, 'Club Rep Details Invalid.')
+            return redirect('registerClubRep')
     else:
         return render(request, 'account/registerClubRep.html', {'form': form})
 
-#New FV
 @login_required
 @user_passes_test(isCinemaOrAccountsManager)
 def discountRequests(request):
@@ -204,6 +197,7 @@ def updateDiscount(request, discountList_club):
     if form.is_valid():
         form.save()
         return redirect ('discountRequests')
+
     return render(request, 'account/updateDiscount.html', {'club':Club, 'form': form})
 
 def deleteDiscount(request, discountList_id):
@@ -219,81 +213,8 @@ def requestDiscount(request):
             message = form.save(commit=False)
             message.save()
             return redirect("../../home")
+        else:
+            messages.info(request, 'Discount Invalid.')
+            return redirect('requestDiscount')
     else:
         return render(request, "account/requestDiscount.html", {"form": form})
-
-    #return render(request, "account/stripeCheckout.html")
-
-#def deleteMovies(request, movie_id):
-#    movie = movieListing.objects.get(pk=movie_id)
-#    movie.delete()
-#    return redirect ('movie_List')
-
-# def register_view(request, *args, **kwargs):
-# 	user = request.user
-# 	if user.is_authenticated: 
-# 		return HttpResponse("You are already authenticated as " + str(user.email))
-
-# 	context = {}
-# 	if request.POST:
-# 		form = RegistrationForm(request.POST)
-# 		if form.is_valid():
-# 			form.save()
-# 			email = form.cleaned_data.get('email').lower()
-# 			raw_password = form.cleaned_data.get('password1')
-# 			account = authenticate(email=email, password=raw_password)
-# 			login(request, account)
-# 			destination = kwargs.get("next")
-# 			if destination:
-# 				return redirect(destination)
-# 			return redirect('../home')
-# 		else:
-# 			context['registration_form'] = form
-
-# 	else:
-# 		form = RegistrationForm()
-# 		context['registration_form'] = form
-# 	return render(request, 'account/register.html', context)
-
-# def logout_view(request):
-# 	logout(request)
-# 	return redirect("../home")
-
-
-# def login_view(request, *args, **kwargs):
-# 	context = {}
-
-# 	user = request.user
-# 	if user.is_authenticated: 
-# 		return redirect("../home")
-
-# 	destination = get_redirect_if_exists(request)
-# 	print("destination: " + str(destination))
-
-# 	if request.POST:
-# 		form = AccountAuthenticationForm(request.POST)
-# 		if form.is_valid():
-# 			email = request.POST['email']
-# 			password = request.POST['password']
-# 			user = authenticate(email=email, password=password)
-
-# 			if user:
-# 				login(request, user)
-# 				if destination:
-# 					return redirect(destination)
-# 				return redirect("../home")
-
-# 	else:
-# 		form = AccountAuthenticationForm()
-
-# 	context['login_form'] = form
-
-# 	return render(request, "account/login.html", context)
-
-
-# def get_redirect_if_exists(request):
-# 	redirect = None
-# 	if request.GET:
-# 		if request.GET.get("next"):
-# 			redirect = str(request.GET.get("next"))
-# 	return redirect

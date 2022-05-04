@@ -1,18 +1,12 @@
-import re
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, permission_required
-from django.urls import reverse_lazy
-from django.views import View
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from MovieManaging.forms import *
 from MovieManaging.models import *
 from django.http import HttpResponse
 from django.contrib import messages
 from django.utils.timezone import datetime
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.models import User
-from django.views.generic import UpdateView, DeleteView, ListView
 from django.db.models import Avg
-from django.contrib.auth.models import Group
 from django.db.models import Sum
 import accounts.views 
 dateMessage = 0
@@ -32,35 +26,16 @@ def isAccountsManager(User):
 def home(request):
     return HttpResponse("Hello, Django!")
 
-#def hello_there2(request, name):
-def hello_there(request, name):
-    return render(
-        request,
-        'MovieWebsite/hello_there.html',
-        {
-            'name': name,
-            'date': datetime.now()
-        }
-    )
 
 def homePage(request):
-    return render(request, "MovieWebsite/home.html")
+    movie_list = movieListing.objects.all()
+    return render(request, "MovieWebsite/home.html", {'movie_list':movie_list})
 
 def geeks_view(request):
-    # create a dictionary to pass
-    # data to the template
-    context ={
-        "data":"Gfg is the best",
-        "list":[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    }
-    # return response with template and context
-    return render(request, "MovieWebsite/home.html", context)
+    return redirect("../home")
 
-#https://medium.com/djangotube/django-roles-groups-and-permissions-introduction-a54d1070544
 def listNewMovie(request):
-    form = movieListingForm(request.POST or None)
-
-    group_required = u"Student"
+    form = movieListingForm(request.POST, request.FILES or None)
 
     if request.method == "POST":
         if form.is_valid():
@@ -98,23 +73,20 @@ def addTokensToWallet(request):
     else:
         return render(request, "MovieWebsite/addTokens.html", {"form": form})
 
+@login_required
 def showTokenWallet(request):
     token_value = userTokens.objects.filter(user=request.user.id)
     return render(request, 'MovieWebsite/viewTokens.html', {'token_value':token_value})
 
-
+@login_required
 def updateTokenWallet(request, wallet_id):
     tokens = userTokens.objects.get(pk=wallet_id)
     print(userTokens.objects.filter(user=request.user.id).aggregate(Avg('tokenWallet')))
-    #print(movieTimeSlots.objects.filter(id=1).aggregate(Avg('moviePrice')))
-    #print(movieTimeSlots.objects.filter(id=1).aggregate('moviePrice')
-    #userTokens.objects.annotate(total_difference=F(''))
-
     form = tokenForm(request.POST or None, instance=tokens)
 
     if form.is_valid():
         form.save()
-        return redirect ('home')
+        return redirect ('showTokenWallet')
     return render(request, 'MovieWebsite/updateWallet.html', {'tokens':tokens, 'form': form})
 
 @login_required
@@ -161,6 +133,7 @@ def bookShowing(request, screening_id):
                 screeningChoice = movieTimeSlots.objects.get(id=screening_id)
                 screeningID = screeningChoice.movieScreen_id
 
+
                 # Obtains the seat capacity at the movie screening.
                 movieSeats = addNewScreen.objects.filter(id=screeningID)
                 movieSeatsTotal = movieSeats.aggregate(Sum('movieScreenSeatCapacity'))
@@ -171,6 +144,8 @@ def bookShowing(request, screening_id):
                 totalTicketsPurchased = movieInstance.aggregate(Sum('movieTicketQuanity'))
                 totalTicketsPurchasedConverted = totalTicketsPurchased['movieTicketQuanity__sum']
 
+                if totalTicketsPurchasedConverted == None:
+                    totalTicketsPurchasedConverted = 0
                 # Calculates the remaining seats for the movie showing.
                 remainingSeats = movieSeatsTotalConverted - totalTicketsPurchasedConverted
 
@@ -199,7 +174,7 @@ def bookShowing(request, screening_id):
                 else:
                     messages.error(request, 'You have not created a wallet, please do so in the Initialise Tokens tab')
                     return redirect ('../movieShowings')
-
+                print(remainingSeats)
                 # Calculates the remaining tokens in the wallet.
                 newUserWallet = (int(userWallet) - int(ticketCost))
                 if remainingSeats > 0:
@@ -285,6 +260,9 @@ def screenAdder(request):
             message = form.save(commit=False)
             message.save()
             return redirect("../home")
+        else:
+            messages.info(request, 'Movie Screen Details Invalid')
+            return redirect('newScreen')
     else:
         return render(request, "MovieWebsite/newScreen.html", {"form": form})
 
@@ -309,7 +287,8 @@ def requestCancellation(request, booking_id):
     cancelRequest = pickMovie.objects.get(pk=booking_id)
     cancelRequest.cancelRequested = True
     cancelRequest.save()
-    return redirect ('discountRequests')
+    messages.info(request, 'Cancellation Request Sent.')
+    return redirect ('../home')
 
 #@permission_required('auth.admin')
 def chooseUserRole(request):
