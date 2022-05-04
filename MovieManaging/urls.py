@@ -29,6 +29,8 @@ urlpatterns = [
     path("movieShowings/", allShowings, name='movieShowings'),
     path("bookMovieShowing/<screening_id>", bookShowing, name='bookMovieShowing'),
     path("movieShowingsClubRep/", allShowingsClubRep, name='movieShowingsClubRep'),
+    path("allShowings/", allShowingsForUpdating, name='allShowings'),
+    path("updateShowings/<showing_id>", updateShowings, name='updateShowings'),
     
  #   path("bookMovieShowingClubRep/<screening_id>", bookShowingClubRep, name='bookMovieShowingClubRep'),
     #path('login/', login_view, name="login"),

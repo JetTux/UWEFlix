@@ -63,7 +63,7 @@ class movieTimeSlots(models.Model):
 class pickMovie(models.Model):
     movieTime = models.ForeignKey(movieTimeSlots, default=1, on_delete=models.CASCADE)
     movieTicketQuanity = models.IntegerField(default=1, validators=[MaxValueValidator(10000), MinValueValidator(0)])
-    user = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     created = models.DateField(auto_now_add=True)
 
     def __str__(self):

@@ -1,0 +1,22 @@
+{% extends "MovieWebsite/layout.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<div style="font-size: 40px;"><b>Showings</b></div>
+<ul>
+    {% for movieTimeSlots in showing_list %}
+          <li>{{ movieTimeSlots }} 
+          <a href="{% url 'updateShowings' movieTimeSlots.id %}">Update</a> 
+    {% endfor %}
+</ul>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+            <div class="error-message">{{ message }}</div>
+        {% endif %}
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

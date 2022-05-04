@@ -14,6 +14,11 @@ class movieListingForm(forms.ModelForm):
         model = movieListing
         fields = ("movieTitle","movieDescription","movieRunTimeMinutes","movieRating",) 
 
+class showingForm(forms.ModelForm):
+    class Meta:
+        model = movieTimeSlots
+        fields = ("movieDesired","movieScreen","movieTime","movieDate","moviePrice") 
+
 class addNewScreenForm(forms.ModelForm):
     class Meta:
         model = addNewScreen

@@ -20,6 +20,12 @@ dateMessage = 0
 def isCinemaManager(User):
     return User.groups.filter(name='Cinema Manager').exists()
 
+def isCinemaOrAccountsManager(User):
+    if User.groups.filter(name='Accounts Manager').exists():
+        return User.groups.filter(name='Accounts Manager').exists()
+    elif User.groups.filter(name='Cinema Manager').exists():
+        return User.groups.filter(name='Cinema Manager').exists()
+
 def isAccountsManager(User):
     return User.groups.filter(name='Accounts Manager').exists()
 
@@ -116,7 +122,7 @@ def displayMovieBookings(request):
     return render(request, 'MovieWebsite/bookingListings.html', {'bookingList':bookingList})
 
 @login_required
-@user_passes_test(isCinemaManager)
+@user_passes_test(isCinemaOrAccountsManager)
 def allMovies(request):
     movie_list = movieListing.objects.all()
     return render(request, 'MovieWebsite/movieList.html', {'movie_list':movie_list})
@@ -141,9 +147,7 @@ def allShowingsClubRep(request):
 
 
 def bookShowing(request, screening_id):
-    print(screening_id)
     screening = movieTimeSlots.objects.get(pk=screening_id)
-    print(screening)
     form = movieSelectionForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
@@ -192,18 +196,16 @@ def bookShowing(request, screening_id):
                     userWalletModel = userTokens.objects.get(user_id=request.user)
                     userWallet = userWalletModel.tokenWallet
                 else:
-                    messages.error(request, 'You have not created a wallet, please do so in Initialise Tokens')
+                    messages.error(request, 'You have not created a wallet, please do so in the Initialise Tokens tab')
                     return redirect ('../movieShowings')
 
                 # Calculates the remaining tokens in the wallet.
                 newUserWallet = (int(userWallet) - int(ticketCost))
-                print("did it")
                 if remainingSeats > 0:
-                    print("did it")
                     if newUserWallet > 0:
                         userTokens.objects.filter(user=request.user).update(tokenWallet=newUserWallet)
                         message.save()    
-                        messages.info(request, 'Booking accepted')
+                        messages.info(request, 'Booking accepted, you can view your bookings in the View Bookings tab')
                         return redirect ('../movieShowings')
                     else:
                         messages.error(request, 'Sorry, You do not have enough tokens for this purchase')
@@ -212,14 +214,16 @@ def bookShowing(request, screening_id):
                     messages.error(request, 'Sorry, there are not enough seats available')
                     return redirect ('../movieShowings')
             else:
-                messages.error(request, 'Log in')
+                #user = models.ForeignKey(User, blank = True, null = True)
+                #message.user = user
+                message.movieTime_id = screening_id
+                message.save()
                 return redirect ('../movieShowings')
     else:
         return render(request, 'MovieWebsite/bookMovieShowing.html', {'screening':screening, 'form': form})
 
 def bookMovieShowing(request):
     return render(request)
-
 
 def updateMovies(request, movie_id):
     movie = movieListing.objects.get(pk=movie_id)
@@ -235,6 +239,20 @@ def deleteMovies(request, movie_id):
     movie.delete()
     return redirect ('movie_List')
 
+@login_required
+@user_passes_test(isCinemaOrAccountsManager)
+def allShowingsForUpdating(request):
+    showing_list = movieTimeSlots.objects.all().order_by('movieDate')
+    return render(request, 'MovieWebsite/allShowings.html', {'showing_list':showing_list})
+
+def updateShowings(request, showing_id):
+    showing = movieTimeSlots.objects.get(pk=showing_id)
+    form = showingForm(request.POST or None, instance=showing)
+
+    if form.is_valid():
+        form.save()
+        return redirect ('../../allShowings')
+    return render(request, 'MovieWebsite/updateShowing.html', {'showing':showing, 'form': form})
 # Admin form allowing the creation of movie showing from the movieTimeTableForm
 # Invloves: movieDesired, movieScreen, movieTime, movieDate
 
